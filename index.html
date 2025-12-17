@@ -245,7 +245,7 @@
             
             const dbRef = db.ref(); 
             
-            dbRef.on('value', (snapshot) => {
+            dbRef.on('fileData', (snapshot) => {
                 const data = snapshot.val();
                 if(data) {
                     updateDashboard(data);
