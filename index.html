@@ -223,7 +223,7 @@
         } catch (e) {
             console.error("Firebase not connected. Check config.", e);
             // Running demo mode just so you can see the UI design
-            runDemoMode(); 
+           
         }
 
         // =======================================================
@@ -243,9 +243,9 @@
             // This function listens to changes in your Firebase Database
             // It assumes your database structure is flat (at the root) or you can adjust the ref.
             
-            const dbRef = db.ref(); 
+            const dbRef = db.ref().child("fileData"); 
             
-            dbRef.on('fileData', (snapshot) => {
+            dbRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if(data) {
                     updateDashboard(data);
