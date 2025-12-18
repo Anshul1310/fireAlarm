@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FireGuard - Surveillance Dashboard</title>
+    <title>FireGuard - 360° System</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -47,6 +47,14 @@
             border-radius: 8px;
             font-weight: bold;
             display: none; /* Hidden by default */
+            font-size: 1.2rem;
+            animation: pulse-banner 1s infinite;
+        }
+
+        @keyframes pulse-banner {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
         }
 
         .grid-container {
@@ -98,7 +106,7 @@
         }
 
         .value {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
         }
 
@@ -111,81 +119,69 @@
 
         .status-danger {
             border-bottom: 5px solid var(--danger-color);
-            animation: pulse-red 2s infinite;
+            background-color: rgba(231, 76, 60, 0.1);
         }
         .status-danger .value { color: var(--danger-color); }
         .status-danger .icon-box { color: var(--danger-color); }
-
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
-        }
 
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1><i class="fas fa-shield-alt"></i> Fire Detection System</h1>
+        <h1><i class="fas fa-fire-extinguisher"></i> Fire Detection System</h1>
         <p>Real-time Environment & Surveillance Monitor</p>
     </div>
 
     <div id="alertBanner" class="status-banner" style="background-color: #e74c3c;">
-        <i class="fas fa-exclamation-triangle"></i> WARNING: CRITICAL LIMITS EXCEEDED
+        <i class="fas fa-exclamation-circle"></i> ALERT: ABNORMAL LEVELS DETECTED
     </div>
 
     <div class="grid-container">
         
-        <div class="section-title">360° Camera Surveillance</div>
+        <div class="section-title">Camera Feed (Fire Detection)</div>
 
         <div class="card" id="card-c1">
             <div class="icon-box"><i class="fas fa-video"></i></div>
             <div class="label">Camera North</div>
-            <div class="value" id="val-c1">Loading...</div>
+            <div class="value" id="val-c1">Connecting...</div>
         </div>
 
         <div class="card" id="card-c2">
             <div class="icon-box"><i class="fas fa-video"></i></div>
             <div class="label">Camera East</div>
-            <div class="value" id="val-c2">Loading...</div>
+            <div class="value" id="val-c2">Connecting...</div>
         </div>
 
         <div class="card" id="card-c3">
             <div class="icon-box"><i class="fas fa-video"></i></div>
             <div class="label">Camera West</div>
-            <div class="value" id="val-c3">Loading...</div>
+            <div class="value" id="val-c3">Connecting...</div>
         </div>
 
-        <div class="card" id="card-c4">
-            <div class="icon-box"><i class="fas fa-video"></i></div>
-            <div class="label">Camera South</div>
-            <div class="value" id="val-c4">Loading...</div>
-        </div>
-
-        <div class="section-title">Environmental Sensors</div>
+        <div class="section-title">Environment Sensors</div>
 
         <div class="card" id="card-temp">
             <div class="icon-box"><i class="fas fa-thermometer-half"></i></div>
-            <div class="label">Temperature (°C)</div>
+            <div class="label">Temperature</div>
             <div class="value" id="val-temp">--</div>
         </div>
 
         <div class="card" id="card-humidity">
             <div class="icon-box"><i class="fas fa-tint"></i></div>
-            <div class="label">Humidity (%)</div>
+            <div class="label">Humidity</div>
             <div class="value" id="val-humidity">--</div>
         </div>
 
         <div class="card" id="card-smoke">
             <div class="icon-box"><i class="fas fa-smog"></i></div>
-            <div class="label">Smoke Level</div>
+            <div class="label">Smoke Detector</div>
             <div class="value" id="val-smoke">--</div>
         </div>
 
         <div class="card" id="card-co">
             <div class="icon-box"><i class="fas fa-biohazard"></i></div>
-            <div class="label">CO Level</div>
+            <div class="label">CO Detector</div>
             <div class="value" id="val-co">--</div>
         </div>
 
@@ -198,8 +194,9 @@
         // =======================================================
         // 1. FIREBASE CONFIGURATION
         // =======================================================
-        // REPLACE the object below with your actual project keys 
-        // from the Firebase Console (Project Settings > General > Web App)
+        // Instructions:
+        // 1. Go to Firebase Console > Project Settings > General > Your Apps (Web)
+        // 2. Copy the "firebaseConfig" object and paste it below replacing the placeholder.
         
         const firebaseConfig = {
   apiKey: "AIzaSyAATUomUuy7uFbiFTEgX5MXgcQY5DVOOmA",
@@ -212,39 +209,22 @@
   measurementId: "G-0L8T4C1T1S"
 };
 
-
         // Initialize Firebase
-        // NOTE: If you haven't set up the config above, the code below 
-        // will log an error in the console.
         try {
             firebase.initializeApp(firebaseConfig);
             const database = firebase.database();
             startListening(database);
         } catch (e) {
             console.error("Firebase not connected. Check config.", e);
-            // Running demo mode just so you can see the UI design
-           
+            
         }
 
         // =======================================================
-        // 2. SET SENSOR LIMITS
+        // 2. MAIN LOGIC
         // =======================================================
-        
-        // --- COMMENT OUT OR CHANGE THE VALUES BELOW TO SET LIMITS ---
-        
-        const LIMIT_TEMP = 50;      // Warning if Temperature > 50
-        const LIMIT_HUMIDITY = 90;  // Warning if Humidity > 90
-        const LIMIT_SMOKE = 300;    // Warning if Smoke > 300 (adjust based on sensor)
-        const LIMIT_CO = 100;       // Warning if CO > 100
-        
-        // -----------------------------------------------------------
 
         function startListening(db) {
-            // This function listens to changes in your Firebase Database
-            // It assumes your database structure is flat (at the root) or you can adjust the ref.
-            
-            const dbRef = db.ref().child("fileData"); 
-            
+            const dbRef = db.ref().child("fileData");
             dbRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if(data) {
@@ -256,36 +236,18 @@
         function updateDashboard(data) {
             let globalAlert = false;
 
-            // --- UPDATE CAMERAS (1 = Fire, 0 = Safe) ---
-            updateCameraStatus('c1', data.c1);
-            updateCameraStatus('c2', data.c2);
-            updateCameraStatus('c3', data.c3);
-            updateCameraStatus('c4', data.c4);
+            // Cameras (0 = Safe, 1 = Fire Detected)
+            if(updateStatus('c1', data.c1, "FIRE!", "No Fire")) globalAlert = true;
+            if(updateStatus('c2', data.c2, "FIRE!", "No Fire")) globalAlert = true;
+            if(updateStatus('c3', data.c3, "FIRE!", "No Fire")) globalAlert = true;
 
-            // Check if any camera detects fire
-            if (data.c1 == 1 || data.c2 == 1 || data.c3 == 1 || data.c4 == 1) {
-                globalAlert = true;
-            }
+            // Sensors (0 = Normal, 1 = Limit Exceeded/Danger)
+            if(updateStatus('temp', data.temp, "HIGH TEMP", "Normal")) globalAlert = true;
+            if(updateStatus('humidity', data.humidity, "ABNORMAL", "Normal")) globalAlert = true;
+            if(updateStatus('smoke', data.smoke, "SMOKE DETECTED", "Clean")) globalAlert = true;
+            if(updateStatus('co', data.co, "CO DETECTED", "Safe")) globalAlert = true;
 
-            // --- UPDATE SENSORS ---
-            
-            // Temperature
-            updateSensorStatus('temp', data.temp, LIMIT_TEMP);
-            if(data.temp > LIMIT_TEMP) globalAlert = true;
-
-            // Humidity
-            updateSensorStatus('humidity', data.humidity, LIMIT_HUMIDITY);
-            if(data.humidity > LIMIT_HUMIDITY) globalAlert = true;
-
-            // Smoke
-            updateSensorStatus('smoke', data.smoke, LIMIT_SMOKE);
-            if(data.smoke > LIMIT_SMOKE) globalAlert = true;
-
-            // CO
-            updateSensorStatus('co', data.co, LIMIT_CO);
-            if(data.co > LIMIT_CO) globalAlert = true;
-
-            // --- GLOBAL BANNER ---
+            // Toggle Global Banner
             const banner = document.getElementById('alertBanner');
             if (globalAlert) {
                 banner.style.display = 'block';
@@ -294,52 +256,43 @@
             }
         }
 
-        // Helper to update Camera Cards
-        function updateCameraStatus(id, value) {
+        // Universal function to update any card based on 0 or 1
+        function updateStatus(id, value, dangerText, safeText) {
             const card = document.getElementById(`card-${id}`);
             const textEl = document.getElementById(`val-${id}`);
             
+            // Safety check in case a sensor is missing from database
+            if (value === undefined || value === null) {
+                textEl.innerText = "No Signal";
+                return false;
+            }
+
             // Remove old classes
             card.classList.remove('status-safe', 'status-danger');
 
+            // Logic: 1 is Danger, 0 is Safe
             if (value == 1) {
-                // Fire Detected
                 card.classList.add('status-danger');
-                textEl.innerText = "FIRE DETECTED!";
+                textEl.innerText = dangerText;
+                return true; // Returns true to trigger global alert
             } else {
-                // Safe
                 card.classList.add('status-safe');
-                textEl.innerText = "Safe";
+                textEl.innerText = safeText;
+                return false;
             }
         }
 
-        // Helper to update Sensor Cards
-        function updateSensorStatus(id, value, limit) {
-            const card = document.getElementById(`card-${id}`);
-            const textEl = document.getElementById(`val-${id}`);
-            
-            textEl.innerText = value;
-            
-            // Remove old classes
-            card.classList.remove('status-safe', 'status-danger');
-
-            if (parseFloat(value) > limit) {
-                card.classList.add('status-danger');
-            } else {
-                card.classList.add('status-safe');
-            }
-        }
-
-        // --- DEMO MODE (For testing without Real Firebase) ---
+        // --- DEMO MODE (For testing only) ---
         function runDemoMode() {
             console.log("Running in Demo Mode");
             setInterval(() => {
+                // Simulating random 0s and 1s
                 const demoData = {
-                    c1: 0, c2: 0, c3: 1, c4: 0, // Camera 3 sees fire
-                    temp: Math.floor(Math.random() * 60), // Random temp
-                    humidity: 40,
-                    smoke: 120,
-                    co: 50
+                    c1: 0, c2: 0, c3: Math.random() < 0.2 ? 1 : 0, // Occasional fire
+                    temp: Math.random() < 0.3 ? 1 : 0,            // Occasional high temp
+                    humidity: 0,
+                    smoke: 0,
+                    co: 0
                 };
                 updateDashboard(demoData);
             }, 3000);
