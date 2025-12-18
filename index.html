@@ -159,31 +159,7 @@
             <div class="value" id="val-c3">Connecting...</div>
         </div>
 
-        <div class="section-title">Environment Sensors</div>
 
-        <div class="card" id="card-temp">
-            <div class="icon-box"><i class="fas fa-thermometer-half"></i></div>
-            <div class="label">Temperature</div>
-            <div class="value" id="val-temp">--</div>
-        </div>
-
-        <div class="card" id="card-humidity">
-            <div class="icon-box"><i class="fas fa-tint"></i></div>
-            <div class="label">Humidity</div>
-            <div class="value" id="val-humidity">--</div>
-        </div>
-
-        <div class="card" id="card-smoke">
-            <div class="icon-box"><i class="fas fa-smog"></i></div>
-            <div class="label">Smoke Detector</div>
-            <div class="value" id="val-smoke">--</div>
-        </div>
-
-        <div class="card" id="card-co">
-            <div class="icon-box"><i class="fas fa-biohazard"></i></div>
-            <div class="label">CO Detector</div>
-            <div class="value" id="val-co">--</div>
-        </div>
 
     </div>
 
@@ -242,10 +218,7 @@
             if(updateStatus('c3', data.c3, "FIRE!", "No Fire")) globalAlert = true;
 
             // Sensors (0 = Normal, 1 = Limit Exceeded/Danger)
-            if(updateStatus('temp', data.temperature, "HIGH TEMP", "Normal")) globalAlert = true;
-            if(updateStatus('humidity', data.humidity, "ABNORMAL", "Normal")) globalAlert = true;
-            if(updateStatus('smoke', data.smoke, "SMOKE DETECTED", "Clean")) globalAlert = true;
-            if(updateStatus('co', data.co, "CO DETECTED", "Safe")) globalAlert = true;
+            
 
             // Toggle Global Banner
             const banner = document.getElementById('alertBanner');
