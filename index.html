@@ -242,7 +242,7 @@
             if(updateStatus('c3', data.c3, "FIRE!", "No Fire")) globalAlert = true;
 
             // Sensors (0 = Normal, 1 = Limit Exceeded/Danger)
-            if(updateStatus('temperature', data.temp, "HIGH TEMP", "Normal")) globalAlert = true;
+            if(updateStatus('temp', data.temperature, "HIGH TEMP", "Normal")) globalAlert = true;
             if(updateStatus('humidity', data.humidity, "ABNORMAL", "Normal")) globalAlert = true;
             if(updateStatus('smoke', data.smoke, "SMOKE DETECTED", "Clean")) globalAlert = true;
             if(updateStatus('co', data.co, "CO DETECTED", "Safe")) globalAlert = true;
